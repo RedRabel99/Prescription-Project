@@ -5,4 +5,9 @@ from django.db import models
 
 class Drug(models.Model):
     name = models.CharField(max_length=150)
-    is_refunded = models.BooleanField(default=False)
+    form = models.CharField(max_length=100)
+    dose = models.CharField(max_length=20)
+    pack = models.CharField(max_length=100)
+    fee = models.CharField(max_length=10)
+    company = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
