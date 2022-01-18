@@ -18,8 +18,10 @@ from django.urls import path
 from drugs.urls import router as drugs_router
 from django.urls import include, re_path
 from prescriptions.urls import router as prescriptions_router
+from users.urls import router as users_router
 urlpatterns = [
     path('admin/', admin.site.urls),
-    re_path('', include((drugs_router.urls, 'users'))),
+    re_path('', include((drugs_router.urls, 'drugs'))),
     re_path('', include((prescriptions_router.urls, 'prescriptions'))),
+    re_path('', include((users_router.urls, 'users')))
 ]
