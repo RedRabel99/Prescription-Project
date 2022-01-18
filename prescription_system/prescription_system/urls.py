@@ -17,8 +17,9 @@ from django.contrib import admin
 from django.urls import path
 from drugs.urls import router as drugs_router
 from django.urls import include, re_path
-
+from prescriptions.urls import router as prescriptions_router
 urlpatterns = [
     path('admin/', admin.site.urls),
     re_path('', include((drugs_router.urls, 'users'))),
+    re_path('', include((prescriptions_router.urls, 'prescriptions'))),
 ]
