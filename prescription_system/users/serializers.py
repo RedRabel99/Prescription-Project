@@ -57,7 +57,7 @@ class PatientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Patient
-        fields = ['id', 'user', 'address']
+        fields = ['id', 'user', 'address', 'birth_date']
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')
@@ -68,6 +68,7 @@ class PatientSerializer(serializers.ModelSerializer):
         user.is_patient = True
         user.save()
         patient, created = Patient.objects.update_or_create(user=user,
-                                                            address=validated_data.pop('address'))
+                                                            address=validated_data.pop('address'),
+                                                            birth_date=validated_data.pop('birth_date'))
 
         return patient

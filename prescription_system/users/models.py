@@ -10,6 +10,7 @@ class User(AbstractUser):
 
 class Doctor(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='doctor_id')
+    specialization = models.TextField(max_length=50, null=True)
 
 
 class Pharmacist(models.Model):
@@ -18,6 +19,6 @@ class Pharmacist(models.Model):
 
 
 class Patient(models.Model):
-    birth_date = models.DateField()
+    birth_date = models.DateField(null=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='patient_id')
     address = models.TextField()
