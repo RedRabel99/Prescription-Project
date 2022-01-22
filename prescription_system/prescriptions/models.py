@@ -3,8 +3,6 @@ from drugs.models import Drug
 from django.core.validators import MinValueValidator
 
 
-# Create your models here.
-
 class Prescription(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 

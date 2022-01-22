@@ -21,7 +21,7 @@ from prescriptions.urls import router as prescriptions_router
 from users.urls import router as users_router
 urlpatterns = [
     path('admin/', admin.site.urls),
-    re_path('', include((drugs_router.urls, 'drugs'))),
+    re_path(r'', include((drugs_router.urls, 'drugs'))),
     re_path('', include((prescriptions_router.urls, 'prescriptions'))),
     re_path('', include((users_router.urls, 'users')))
 ]

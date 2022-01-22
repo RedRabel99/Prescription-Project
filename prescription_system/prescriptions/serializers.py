@@ -1,10 +1,10 @@
 from rest_framework import serializers
 from prescriptions.models import Prescription, PrescriptionSegment
-from drugs.serializers import DrugsSerializer
+from drugs.serializers import DrugSerializer
 
 
 class PrescriptionSegmentSerializer(serializers.ModelSerializer):
-    drug = DrugsSerializer(read_only=True)
+    drug = DrugSerializer(read_only=True)
 
     class Meta:
         model = PrescriptionSegment

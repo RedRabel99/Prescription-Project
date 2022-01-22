@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
             name='PrescriptionSegment',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('count', models.IntegerField(validators=[prescriptions.models.validate_is_greater_than_zero])),
+                ('count', models.IntegerField()),
                 ('drug', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='drugs.drug')),
                 ('prescription', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='segments', to='prescriptions.prescription')),
             ],
