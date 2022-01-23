@@ -24,7 +24,7 @@ class DoctorSerializer(serializers.ModelSerializer):
         user = UserSerializer.create(UserSerializer(), validated_data=user_data)
         if password is not None:
             user.set_password(password)
-        user.is_patient = True
+        user.is_doctor = True
         user.save()
         doctor, created = Doctor.objects.update_or_create(user=user)
 
@@ -44,7 +44,7 @@ class PharmacistSerializer(serializers.ModelSerializer):
         user = UserSerializer.create(UserSerializer(), validated_data=user_data)
         if password is not None:
             user.set_password(password)
-        user.is_patient = True
+        user.is_pharmacist = True
         user.save()
         pharmacist, created = Pharmacist.objects.update_or_create(user=user,
                                                                   pharmacy=validated_data.pop('pharmacy'))
