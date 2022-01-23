@@ -19,8 +19,11 @@ from drugs.urls import router as drugs_router
 from django.urls import include, re_path
 from prescriptions.urls import router as prescriptions_router
 from users.urls import router as users_router
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     re_path(r'', include((drugs_router.urls, 'drugs'))),
     re_path('', include((prescriptions_router.urls, 'prescriptions'))),
     re_path('', include((users_router.urls, 'users')))
