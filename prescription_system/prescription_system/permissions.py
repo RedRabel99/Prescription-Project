@@ -1,4 +1,5 @@
 from rest_framework import permissions
+from rest_framework.permissions import IsAuthenticated
 from users.models import User
 
 
@@ -25,3 +26,22 @@ class PrescriptionPermission(permissions.BasePermission):
                 return True
 
         return request.user.is_doctor or request.user.is_pharmacist
+
+
+class IsObjectOrReadOnly(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if not request.user.is_authenticated:
+            return False
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return request.user == obj.user
+
+
+class IsDoctor(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_doctor
+
+
+class IsObject(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return request.user == obj.user
