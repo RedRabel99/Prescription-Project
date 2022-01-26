@@ -20,6 +20,22 @@ class DrugViewSetTestCase(APITestCase):
         self.number_of_elements = 1
         self.list_url = reverse('drugs:drugs-list')
 
+        self.user_data = {
+            'user': {
+                'username': 'testuser',
+                'first_name': 'name',
+                'last_name': 'lastname',
+                'email': 'mail@mail.com',
+                'password': '1234',
+                'is_pharmacist': True
+            },
+            'pharmacy': 'xD'
+        }
+        self.client.post(reverse('users:pharmacist-list'), self.user_data, format='json')
+        login_response = self.client.post(r'/token/', {'username': 'testuser', 'password': '1234'}, format='json')
+        token = json.loads(login_response.content)['access']
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
+
     def test_drug_create(self):
         response = self.client.post(self.list_url, self.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
