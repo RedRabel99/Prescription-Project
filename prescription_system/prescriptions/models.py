@@ -8,6 +8,8 @@ class Prescription(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     patient = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='patients_prescriptions', null=True)
     doctor = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='issued_prescriptions', null=True)
+    realized = models.BooleanField(default=False, blank=True)
+    realization_date = models.DateField(null=True)
 
 
 class PrescriptionSegment(models.Model):

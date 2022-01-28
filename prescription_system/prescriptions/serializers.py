@@ -29,7 +29,6 @@ class PrescriptionSerializer(serializers.ModelSerializer):
         segments = validated_data.pop('segments')
         prescription = Prescription.objects.create(**validated_data)
         for segment_data in segments:
-            print(segment_data)
             PrescriptionSegment.objects.create(prescription=prescription,
                                                **segment_data)
         return prescription
