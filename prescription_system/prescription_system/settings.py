@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'drugs',
     'prescriptions',
-    'users'
+    'users',
+    'prescription_requests',
 ]
 
 MIDDLEWARE = [
