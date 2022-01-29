@@ -2,6 +2,7 @@ from django.db import models
 from drugs.models import Drug
 from users.models import User
 from django.core.validators import MinValueValidator
+from prescription_requests.models import PrescriptionRequest
 
 
 class Prescription(models.Model):
@@ -15,4 +16,6 @@ class Prescription(models.Model):
 class PrescriptionSegment(models.Model):
     drug = models.ForeignKey(Drug, on_delete=models.CASCADE)
     count = models.IntegerField(validators=[MinValueValidator(0)])
-    prescription = models.ForeignKey(Prescription, related_name="segments", on_delete=models.CASCADE)
+    prescription = models.ForeignKey(Prescription, related_name="segments", null=True, on_delete=models.CASCADE)
+    prescription_request = models.ForeignKey(PrescriptionRequest,
+                                             related_name="segments", null=True, on_delete=models.CASCADE)

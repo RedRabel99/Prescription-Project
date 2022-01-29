@@ -45,3 +45,27 @@ class IsDoctor(permissions.BasePermission):
 class IsObject(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return request.user == obj.user
+
+
+class PrescriptionRequestPermission(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.user.is_pharmacist:
+            return False
+
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        return request.user.is_patient or request.user.is_doctor
+
+    def has_object_permission(self, request, view, obj):
+        if request.user.is_pharmacist:
+            return False
+
+        if request.method in permissions.SAFE_METHODS:
+            return obj.patient == request.user or obj.doctor == request.user
+
+        if request.method in ('PUT', 'PATCH'):
+            print("XDDD")
+            return request.user.is_doctor
+
+        return request.user.is_patient
