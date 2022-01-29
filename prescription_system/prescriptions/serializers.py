@@ -22,8 +22,8 @@ class PrescriptionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Prescription
-        fields = ['id', 'segments', 'patient', 'doctor']
-        read_only_fields = ['doctor']
+        fields = ['id', 'segments', 'patient', 'doctor', 'realized', 'realization_date']
+        read_only_fields = ['doctor', 'realized', 'realization_date']
 
     def create(self, validated_data):
         segments = validated_data.pop('segments')
@@ -41,3 +41,6 @@ class PrescriptionSerializer(serializers.ModelSerializer):
         send_email_task.delay(title_string, content_string, [prescription.patient.email])
 
         return prescription
+
+    def update(self, instance, validated_data):
+        raise serializers.ValidationError('You cant update prescription fields')
