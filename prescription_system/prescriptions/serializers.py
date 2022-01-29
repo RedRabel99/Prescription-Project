@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from prescriptions.models import Prescription, PrescriptionSegment
 from drugs.serializers import DrugSerializer
-from drugs.models import Drug
+from prescriptions.tasks import send_email_task, get_prescription_email_content
 
 
 class PrescriptionSegmentSerializer(serializers.ModelSerializer):
@@ -31,4 +31,13 @@ class PrescriptionSerializer(serializers.ModelSerializer):
         for segment_data in segments:
             PrescriptionSegment.objects.create(prescription=prescription,
                                                **segment_data)
+        print(prescription.segments.all())
+        try:
+            content_string = get_prescription_email_content(prescription)
+
+        except TypeError:
+            content_string = "XDDDD"
+        title_string = 'New prescription has been prescribed to you'
+        send_email_task.delay(title_string, content_string, [prescription.patient.email])
+
         return prescription
