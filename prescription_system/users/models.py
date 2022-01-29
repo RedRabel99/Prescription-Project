@@ -19,6 +19,6 @@ class Pharmacist(models.Model):
 
 
 class Patient(models.Model):
-    birth_date = models.DateField(null=True)
+    birth_date = models.DateField(null=True, blank=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='patient_id')
     address = models.TextField()
