@@ -1,8 +1,10 @@
+from rest_framework.response import Response
+
 from prescription_system.permissions import IsDoctor, IsObject
 from users.serializers import DoctorSerializer, PatientSerializer, PharmacistSerializer
 from rest_framework.permissions import IsAuthenticated
 from users.models import Doctor, Patient, Pharmacist
-from rest_framework import viewsets
+from rest_framework import viewsets, status, serializers
 
 OBJECT_ACTIONS = ('retrieve', 'update', 'partial_update', 'destroy')
 OBJECT_EDIT_ACTIONS = ('update', 'partial_update', 'destroy')
@@ -19,6 +21,14 @@ class DoctorViewSet(viewsets.ModelViewSet):
             self.permission_classes = [IsAuthenticated, IsObject, ]
         return super(self.__class__, self).get_permissions()
 
+    def get_object(self):
+        if self.kwargs.get('pk', None) == 'me':
+            if not self.request.user.is_doctor:
+                raise serializers.ValidationError("Your account is not the doctor account")
+
+            self.kwargs['pk'] = self.request.user.doctor_id.id
+        return super(DoctorViewSet, self).get_object()
+
 
 class PatientViewSet(viewsets.ModelViewSet):
     queryset = Patient.objects.all()
@@ -31,6 +41,13 @@ class PatientViewSet(viewsets.ModelViewSet):
             self.permission_classes = [IsAuthenticated, IsObject, ]
         return super(self.__class__, self).get_permissions()
 
+    def get_object(self):
+        if self.kwargs.get('pk', None) == 'me':
+            if not self.request.user.is_patient:
+                raise serializers.ValidationError("Your account is not the patient account")
+            self.kwargs['pk'] = self.request.user.patient_id.id
+        return super(PatientViewSet, self).get_object()
+
 
 class PharmacistViewSet(viewsets.ModelViewSet):
     queryset = Pharmacist.objects.all()
@@ -42,3 +59,10 @@ class PharmacistViewSet(viewsets.ModelViewSet):
         if self.action == OBJECT_EDIT_ACTIONS:
             self.permission_classes = [IsAuthenticated, IsObject]
         return super(self.__class__, self).get_permissions()
+
+    def get_object(self):
+        if self.kwargs.get('pk', None) == 'me':
+            if not self.request.user.is_pharmacist:
+                raise serializers.ValidationError("Your account is not the pharmacist account")
+            self.kwargs['pk'] = self.request.user.pharmacist_id.id
+        return super(PharmacistViewSet, self).get_object()
