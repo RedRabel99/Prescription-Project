@@ -65,7 +65,6 @@ class PrescriptionRequestPermission(permissions.BasePermission):
             return obj.patient == request.user or obj.doctor == request.user
 
         if request.method in ('PUT', 'PATCH'):
-            print("XDDD")
             return request.user.is_doctor
 
         return request.user.is_patient
