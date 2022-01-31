@@ -31,12 +31,11 @@ class PrescriptionSerializer(serializers.ModelSerializer):
         for segment_data in segments:
             PrescriptionSegment.objects.create(prescription=prescription,
                                                **segment_data)
-        print(prescription.segments.all())
         try:
             content_string = get_prescription_email_content(prescription)
 
         except TypeError:
-            content_string = "XDDDD"
+            content_string = "You have new prescription"
         title_string = 'New prescription has been prescribed to you'
         send_email_task.delay(title_string, content_string, [prescription.patient.email])
 

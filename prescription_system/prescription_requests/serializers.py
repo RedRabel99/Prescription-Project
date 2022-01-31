@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from django.utils import timezone
 from rest_framework import serializers
 from prescription_requests.models import PrescriptionRequest, STATUS_CHOICES
 from prescriptions.serializers import PrescriptionSegmentSerializer
@@ -31,6 +32,6 @@ class PrescriptionRequestSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(f"Cant update request status, "
                                               f"current status: {instance.request_status}")
         instance.request_status = request_status
-        instance.decision_date = datetime.today()
+        instance.decision_date = timezone.now()
         instance.save()
         return instance

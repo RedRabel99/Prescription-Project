@@ -16,8 +16,8 @@ class PrescriptionPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
             return True
-        if request.method in ('PUT', 'PATCH') and not request.user.is_patient:
-            return True
+        if request.method in ('PUT', 'PATCH'):
+            return request.user.is_pharmacist
         return request.user.is_doctor
 
     def has_object_permission(self, request, view, obj):
@@ -65,6 +65,11 @@ class PrescriptionRequestPermission(permissions.BasePermission):
             return obj.patient == request.user or obj.doctor == request.user
 
         if request.method in ('PUT', 'PATCH'):
-            return request.user.is_doctor
+            return obj.doctor == request.user
 
         return request.user.is_patient
+
+
+class IsPharmacist(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_pharmacist
