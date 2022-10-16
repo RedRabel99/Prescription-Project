@@ -160,6 +160,7 @@ EMAIL_HOST_PASSWORD = env('EMAIL_PASSWORD')
 INSTALLED_APPS += [
     'django_celery_beat',
     'django_celery_results',
+    'drf_yasg',
 ]
 
 CELERY_BROKER_URL = 'redis://localhost:6379'
