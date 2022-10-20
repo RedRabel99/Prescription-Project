@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+
 from drugs.urls import router as drugs_router
 from django.urls import include, re_path
 from prescriptions.urls import router as prescriptions_router
@@ -22,6 +24,7 @@ from users.urls import router as users_router
 from prescription_requests.urls import router as prescription_requests_router
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from prescription_system.token import MyTokenObtainPairView
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
@@ -29,5 +32,14 @@ urlpatterns = [
     re_path(r'', include((drugs_router.urls, 'drugs'))),
     re_path('', include((prescriptions_router.urls, 'prescriptions'))),
     re_path('', include((users_router.urls, 'users'))),
-    re_path('', include((prescription_requests_router.urls, 'prescription-requests')))
+    re_path('', include((prescription_requests_router.urls, 'prescription-requests'))),
+    #swagger paths
+    path("schema/", SpectacularAPIView.as_view(), name="schema"), #returns yaml schema
+    path(
+        "swagger/",
+        SpectacularSwaggerView.as_view(
+            template_name="swagger-ui.html", url_name="schema"
+        ),
+        name="swagger-ui",
+    ),
 ]
