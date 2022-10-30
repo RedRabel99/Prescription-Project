@@ -39,12 +39,12 @@ class IsObjectOrReadOnly(permissions.BasePermission):
 
 class IsDoctor(permissions.BasePermission):
     def has_permission(self, request, view):
-        return request.user.is_doctor
+        return request.user.user_type == "DOCTOR"
 
 
 class IsObject(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
-        return request.user == obj.user
+        return request.user == obj
 
 
 class PrescriptionRequestPermission(permissions.BasePermission):
@@ -72,4 +72,20 @@ class PrescriptionRequestPermission(permissions.BasePermission):
 
 class IsPharmacist(permissions.BasePermission):
     def has_permission(self, request, view):
-        return request.user.is_pharmacist
+        return request.user.user_type == "PHARMACIST"
+
+
+class CanRetrieveGivenUserType(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+
+        object_type = obj.user_type
+        user_type = request.user.user_type
+        print(object_type)
+        print(user_type)
+        if object_type == 'DOCTOR':
+            return True
+        if object_type == 'PHARMACIST':
+            return False
+        if object_type == "PATIENT":
+            return not user_type == "PATIENT"
+        return request.user.is_staff
