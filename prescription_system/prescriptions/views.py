@@ -32,17 +32,3 @@ class PrescriptionViewSet(viewsets.ModelViewSet):
         except Patient.DoesNotExist:
             patient_queryset = Prescription.objects.none()
         return patient_queryset
-
-    def partial_update(self, request, *args, **kwargs):
-        prescription = get_object_or_404(Prescription,
-                                         id=self.kwargs['pk'])
-
-        if not prescription.realized:
-            prescription.realized = True
-            prescription.realization_date = datetime.now()
-            prescription.save()
-            return Response(
-                {"message": "Prescription updated successfully"}, status=status.HTTP_201_CREATED
-            )
-        raise serializers.ValidationError('Prescription already realized')
-
