@@ -1,11 +1,16 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
+USER_TYPE_CHOICES = (
+    ("PATIENT", "patient"),
+    ("DOCTOR", "doctor"),
+    ("PHARMACIST", "pharmacist"),
+    ("ADMIN", "admin"),
+)
+
 
 class User(AbstractUser):
-    is_doctor = models.BooleanField(default=False)
-    is_pharmacist = models.BooleanField(default=False)
-    is_patient = models.BooleanField(default=False)
+    user_type = models.CharField(choices=USER_TYPE_CHOICES, default="patient", max_length=10)
 
 
 class Doctor(models.Model):

@@ -1,3 +1,5 @@
+from datetime import datetime, date
+
 from rest_framework import serializers
 from prescriptions.models import Prescription, PrescriptionSegment
 from drugs.serializers import DrugSerializer
@@ -23,7 +25,7 @@ class PrescriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Prescription
         fields = ['id', 'segments', 'patient', 'doctor', 'realized', 'realization_date']
-        read_only_fields = ['doctor', 'realized', 'realization_date']
+        read_only_fields = ['doctor', 'realization_date']
 
     def create(self, validated_data):
         segments = validated_data.pop('segments')
@@ -42,4 +44,18 @@ class PrescriptionSerializer(serializers.ModelSerializer):
         return prescription
 
     def update(self, instance, validated_data):
-        raise serializers.ValidationError('You cant update prescription fields')
+        if instance.realized:
+            raise serializers.ValidationError("This prescription is already realized")
+        try:
+            is_realized = validated_data['realized']
+            if not is_realized:
+                raise serializers.ValidationError("Cannot set realized field to False - it is already False")
+            instance.realized = is_realized
+            instance.realization_date = date.today()
+            instance.save()
+            return instance
+        except KeyError:
+            raise serializers \
+                .ValidationError({'realized': ['This field is required',
+                                               'To set prescription as realized you need to update it with ''realized '
+                                               'field'' as True']})
