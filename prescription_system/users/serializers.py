@@ -34,7 +34,6 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
-        print("Dupsko")
         user_type = validated_data['user_type']
         if user_type.lower() == 'admin':
             raise serializers.ValidationError({"user_type": ["admin is not a valid choice"]})

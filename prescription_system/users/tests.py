@@ -1,9 +1,6 @@
 import json
 from django.urls import reverse
 from rest_framework import status
-
-from drugs.models import Drug
-from prescriptions.models import Prescription, PrescriptionSegment
 from users.models import User, Doctor, Patient, Pharmacist
 from rest_framework.test import APITestCase
 
@@ -16,7 +13,7 @@ class UsersTestCase(APITestCase):
             'first_name': 'john',
             'last_name': 'doe',
             'password': '1234',
-            'is_doctor': True
+            'user_type': 'DOCTOR'
         }
 
         self.patient_user_data = {
@@ -25,7 +22,7 @@ class UsersTestCase(APITestCase):
             'first_name': 'john',
             'last_name': 'doe',
             'password': '1234',
-            'is_patient': True
+            'user_type': 'PATIENT'
         }
 
         self.pharmacist_user_data = {
@@ -34,7 +31,7 @@ class UsersTestCase(APITestCase):
             'first_name': 'john',
             'last_name': 'doe',
             'password': '1234',
-            'is_pharmacist': True
+            'user_type': 'PHARMACIST'
         }
 
         self.drug_data = {
@@ -44,6 +41,12 @@ class UsersTestCase(APITestCase):
             'pack': '20',
             'fee': '100%',
             'company': 'test company\ntest addres 123'
+        }
+
+        self.admin_data = {
+            'username': 'admin',
+            'email': 'admin@mail',
+            'password': 'admin'
         }
 
         doctor_user = User.objects.create(**self.doctor_user_data)
@@ -64,65 +67,94 @@ class UsersTestCase(APITestCase):
         self.pharmacist = Pharmacist.objects.create(user=pharmacist_user, pharmacy='xD')
         self.pharmacist.save()
 
-        login_response = self.client.post('/token/', {'username': 'doctor', 'password': '1234'}, format='json')
+        self.admin_user = User.objects.create_superuser(**self.admin_data)
+        self.admin_user.save()
+
+        login_response = self.client.\
+            post('/token/', {'username': self.doctor_user_data['username'],
+                             'password': self.doctor_user_data['password']})
         self.doctor_token = json.loads(login_response.content)['access']
 
-        login_response = self.client.post('/token/', {'username': 'patient', 'password': '1234'}, format='json')
+        login_response = self.client.\
+            post('/token/', {'username': self.patient_user_data['username'],
+                             'password': self.patient_user_data['password']})
         self.patient_token = json.loads(login_response.content)['access']
 
-        login_response = self.client.post('/token/', {'username': 'pharmacist', 'password': '1234'}, format='json')
+        login_response = self.client.\
+            post('/token/', {'username': self.pharmacist_user_data['username'],
+                             'password': self.pharmacist_user_data['password']})
         self.pharmacist_token = json.loads(login_response.content)['access']
 
-        self.patient_list_url = reverse('users:patient-list')
-        self.doctor_list_url = reverse('users:doctor-list')
-        self.pharmacist_list_url = reverse('users:pharmacist-list')
+        login_response = self.client.\
+            post('/token/', {'username': self.admin_data['username'],
+                             'password': self.admin_data['password']})
+        self.admin_token = json.loads(login_response.content)['access']
+
+        self.patient_list_url = reverse('users:user-patient-list')
+        self.doctor_list_url = reverse('users:user-doctor-list')
+        self.pharmacist_list_url = reverse('users:user-pharmacist-list')
+        self.user_list_url = reverse('users:user-list')
+        self.user_current_detail_url = reverse('users:user-detail', kwargs={'pk': 'current'})
 
     def test_patient_create(self):
         new_patient_user_data = {
-            'user': {
-                'username': 'patient2',
-                'email': 'patient2@mail.com',
-                'first_name': 'john',
-                'last_name': 'doe',
-                'password': '1234'
-            },
-            'address': 'XD'
+            'username': 'patient2',
+            'email': 'patient2@mail.com',
+            'first_name': 'john',
+            'last_name': 'doe',
+            'password': '1234',
+            'patient_id': {
+                'address': 'XD'
+            }
         }
-        response = self.client.post(self.patient_list_url, new_patient_user_data, format='json')
+
+        response = self.client.post(self.user_list_url, new_patient_user_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        login_response = self.client.post('/token/', {'username': 'patient2', 'password': '1234'}, format='json')
+
+        login_response = self.client\
+            .post('/token/', {'username': new_patient_user_data['username'],
+                              'password': new_patient_user_data['password']})
         self.assertEqual(login_response.status_code, status.HTTP_200_OK)
 
     def test_doctor_create(self):
         new_doctor_user_data = {
-            'user': {
-                'username': 'doctor2',
-                'email': 'doctor2@mail.com',
-                'first_name': 'john',
-                'last_name': 'doe',
-                'password': '1234'
-            },
-            'specialization': 'XD'
+            'username': 'doctor2',
+            'email': 'doctor2@mail.com',
+            'first_name': 'john',
+            'last_name': 'doe',
+            'password': '1234',
+            'doctor_id': {
+                'specialization': 'XD'
+            }
         }
-        response = self.client.post(self.doctor_list_url, new_doctor_user_data, format='json')
+
+        response = self.client.post(self.user_list_url + '?user_type=DOCTOR', new_doctor_user_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        login_response = self.client.post('/token/', {'username': 'doctor2', 'password': '1234'}, format='json')
+
+        login_response = self.client.\
+            post('/token/', {'username': new_doctor_user_data['username'],
+                             'password': new_doctor_user_data['password']})
         self.assertEqual(login_response.status_code, status.HTTP_200_OK)
 
     def test_pharmacist_create(self):
         new_pharmacist_user_data = {
-            'user': {
-                'username': 'pharmacist2',
-                'email': 'pharmacist2@mail.com',
-                'first_name': 'john',
-                'last_name': 'doe',
-                'password': '1234'
-            },
-            'pharmacy': 'XD'
+            'username': 'pharmacist2',
+            'email': 'pharmacist2@mail.com',
+            'first_name': 'john',
+            'last_name': 'doe',
+            'password': '1234',
+            'pharmacist_id': {
+                'pharmacy': 'XD'
+            }
         }
-        response = self.client.post(self.pharmacist_list_url, new_pharmacist_user_data, format='json')
+
+        response = self.client\
+            .post(self.user_list_url + '?user_type=PHARMACIST', new_pharmacist_user_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        login_response = self.client.post('/token/', {'username': 'pharmacist2', 'password': '1234'}, format='json')
+
+        login_response = self.client\
+            .post('/token/', {'username': new_pharmacist_user_data['username'],
+                              'password': new_pharmacist_user_data['password']})
         self.assertEqual(login_response.status_code, status.HTTP_200_OK)
 
     def test_doctor_list(self):
@@ -162,31 +194,24 @@ class UsersTestCase(APITestCase):
 
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.pharmacist_token)
         response = self.client.get(self.pharmacist_list_url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.admin_token)
+        response = self.client.get(self.pharmacist_list_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_retrieve_request_patient(self):
+    def test_retrieve_current_user(self):
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.patient_token)
-        response = self.client.get(reverse('users:patient-detail', kwargs={'pk': 'me'}))
+        response = self.client.get(self.user_current_detail_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json.loads(response.content)['user_type'], 'PATIENT')
 
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.doctor_token)
-        response = self.client.get(reverse('users:patient-detail', kwargs={'pk': 'me'}))
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_retrieve_request_doctor(self):
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.doctor_token)
-        response = self.client.get(reverse('users:doctor-detail', kwargs={'pk': 'me'}))
+        response = self.client.get(self.user_current_detail_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json.loads(response.content)['user_type'], 'DOCTOR')
 
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.pharmacist_token)
-        response = self.client.get(reverse('users:doctor-detail', kwargs={'pk': 'me'}))
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_retrieve_request_pharmacist(self):
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.pharmacist_token)
-        response = self.client.get(reverse('users:pharmacist-detail', kwargs={'pk': 'me'}))
+        response = self.client.get(self.user_current_detail_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.doctor_token)
-        response = self.client.get(reverse('users:pharmacist-detail', kwargs={'pk': 'me'}))
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(json.loads(response.content)['user_type'], 'PHARMACIST')

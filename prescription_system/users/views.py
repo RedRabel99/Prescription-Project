@@ -32,7 +32,6 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         register_type = request.query_params.get('user_type', 'PATIENT')
-        print("wtf")
         request.data['user_type'] = register_type
         return super().create(request, *args, **kwargs)
 
