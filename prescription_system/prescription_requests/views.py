@@ -19,10 +19,10 @@ class PrescriptionRequestsViewSet(viewsets.ModelViewSet):
         serializer.save(patient=self.request.user)
 
     def get_queryset(self):
-        if self.request.user.is_patient:
+        if self.request.user.user_type == 'PATIENT':
             patient = self.request.user
             return PrescriptionRequest.objects.filter(patient=patient)
-        elif self.request.user.is_doctor:
+        elif self.request.user.user_type == 'DOCTOR':
             doctor = self.request.user
             return PrescriptionRequest.objects.filter(doctor=doctor)
 

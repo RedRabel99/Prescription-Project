@@ -24,7 +24,7 @@ class PrescriptionViewSet(viewsets.ModelViewSet):
         serializer.save(doctor=self.request.user)
 
     def get_queryset(self):
-        if not self.request.user.is_patient:
+        if not self.request.user.user_type == 'PATIENT':
             return Prescription.objects.all()
         try:
             patient = self.request.user

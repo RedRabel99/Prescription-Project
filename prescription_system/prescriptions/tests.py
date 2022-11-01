@@ -9,7 +9,6 @@ from rest_framework.test import APITestCase
 
 
 class PrescriptionTestCase(APITestCase):
-
     def setUp(self):
         self.doctor_user_data = {
             'username': 'doctor',
@@ -17,7 +16,7 @@ class PrescriptionTestCase(APITestCase):
             'first_name': 'john',
             'last_name': 'doe',
             'password': '1234',
-            'is_doctor': True
+            'user_type': 'DOCTOR'
         }
 
         self.patient_user_data = {
@@ -26,7 +25,7 @@ class PrescriptionTestCase(APITestCase):
             'first_name': 'john',
             'last_name': 'doe',
             'password': '1234',
-            'is_patient': True
+            'user_type': 'PATIENT'
         }
 
         self.pharmacist_user_data = {
@@ -35,7 +34,7 @@ class PrescriptionTestCase(APITestCase):
             'first_name': 'john',
             'last_name': 'doe',
             'password': '1234',
-            'is_pharmacist': True
+            'user_type': 'PHARMACIST'
         }
 
         self.drug_data = {

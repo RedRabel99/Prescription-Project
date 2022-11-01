@@ -9,7 +9,7 @@ class IsPharmacistOrReadOnly(permissions.BasePermission):
             return True
         if request.user.is_anonymous:
             return False
-        return request.user.is_pharmacist
+        return request.user.user_type == 'PHARMACIST'
 
 
 class PrescriptionPermission(permissions.BasePermission):
@@ -17,15 +17,15 @@ class PrescriptionPermission(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
         if request.method in ('PUT', 'PATCH'):
-            return request.user.is_pharmacist
-        return request.user.is_doctor
+            return request.user.user_type == 'PHARMACIST'
+        return request.user.user_type == 'DOCTOR'
 
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             if request.user == obj.patient:
                 return True
 
-        return request.user.is_doctor or request.user.is_pharmacist
+        return request.user.user_type in ['DOCTOR', 'PHARMACIST']
 
 
 class IsObjectOrReadOnly(permissions.BasePermission):
@@ -49,16 +49,16 @@ class IsObject(permissions.BasePermission):
 
 class PrescriptionRequestPermission(permissions.BasePermission):
     def has_permission(self, request, view):
-        if request.user.is_pharmacist:
+        if request.user.user_type == 'PHARMACIST':
             return False
 
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        return request.user.is_patient or request.user.is_doctor
+        return request.user.user_type in ['DOCTOR', 'PATIENT']
 
     def has_object_permission(self, request, view, obj):
-        if request.user.is_pharmacist:
+        if request.user.user_type == ['PHARMACIST']:
             return False
 
         if request.method in permissions.SAFE_METHODS:
@@ -67,7 +67,7 @@ class PrescriptionRequestPermission(permissions.BasePermission):
         if request.method in ('PUT', 'PATCH'):
             return obj.doctor == request.user
 
-        return request.user.is_patient
+        return request.user.user_type == 'PATIENT'
 
 
 class IsPharmacist(permissions.BasePermission):

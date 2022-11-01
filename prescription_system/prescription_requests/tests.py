@@ -18,7 +18,7 @@ class PrescriptionRequestTestCase(APITestCase):
             'first_name': 'john',
             'last_name': 'doe',
             'password': '1234',
-            'is_doctor': True
+            'user_type': 'DOCTOR'
         }
 
         self.patient_user_data = {
@@ -27,7 +27,7 @@ class PrescriptionRequestTestCase(APITestCase):
             'first_name': 'john',
             'last_name': 'doe',
             'password': '1234',
-            'is_patient': True
+            'user_type': 'PATIENT'
         }
 
         self.pharmacist_user_data = {
@@ -36,7 +36,7 @@ class PrescriptionRequestTestCase(APITestCase):
             'first_name': 'john',
             'last_name': 'doe',
             'password': '1234',
-            'is_pharmacist': True
+            'user_type': 'PHARMACIST'
         }
 
         self.drug_data = {
