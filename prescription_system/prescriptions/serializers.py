@@ -44,7 +44,6 @@ class PrescriptionSerializer(serializers.ModelSerializer):
         return prescription
 
     def update(self, instance, validated_data):
-        print(validated_data)
         if instance.realized:
             raise serializers.ValidationError("This prescription is already realized")
         try:

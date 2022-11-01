@@ -115,8 +115,10 @@ class PrescriptionTestCase(APITestCase):
 
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.pharmacist_token)
         response = self.client.patch(
-            reverse("prescriptions:prescription-detail", kwargs={"pk": self.prescription.id})
+            reverse("prescriptions:prescription-detail", kwargs={"pk": self.prescription.id}),
+            {'realized': True},
+            format='json'
         )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_prescriptions = Prescription.objects.get(id=self.prescription.id)
         self.assertEqual(updated_prescriptions.realized, True)
